@@ -2,7 +2,7 @@ import random
 random.seed(30)
 
 class GameBoard:
-    def __init__(self, size = None, colours = ['B', 'R', 'G', 'Y'], answers = [2, 0, 3, 1]):
+    def __init__(self, size = None  ):
         if size == None:
             self.size = 4
         else:
@@ -12,9 +12,10 @@ class GameBoard:
         for i in range(self.size):
             self.board.append(['_'] * self.size)        # make the board with just undescores
         
-        self.solution = answers    # define solution randomly
-        print(self.solution)
-        self.colours = colours            # define colours
+        #self.solution = [2, 0, 3, 1]                    # define solution  * remover to make random
+        self.solution = random.choice([[2, 0, 3, 1],[1, 3, 0, 2]])    # define solution randomly
+        
+        self.colours = ['B', 'R', 'G', 'Y']             # define colours
         random.shuffle(self.colours)                    # shuffle colours to make it random
         
         self.initialise_board()                         # call initialising to complete the board
@@ -30,7 +31,7 @@ class GameBoard:
     def expand_region(self, row, col, colour):                   
         for row_num in range(len(self.board)):                  # iterate through every row
             for col_num in range(len(self.board)):              # iterate through every possition
-                if abs(row_num - row)<=self.size//2 + 1 and abs(col_num - col) <= self.size//2 + 1 and self.board[row_num][col_num]=='_':  # check neighbourhood
+                if abs(row_num - row)<=1 and abs(col_num - col) <= 1 and self.board[row_num][col_num]=='_':  # check neighbourhood
                     self.board[row_num][col_num] = colour       # change
         
     def initialise_board(self):
@@ -53,11 +54,11 @@ class GameBoard:
 
 
 class MeowdokuGame:
-    def __init__(self, size = 4, colours = ['B', 'R', 'G', 'Y'] , answers = [2, 0, 3, 1]):                       # initial game definitions
+    def __init__(self, size = 4):                       # initial game definitions
         self.guesses = 0
         self.num_cats_found = 0
         self.size = size
-        self.board = GameBoard (size, colours, answers)
+        self.board = GameBoard (size)
         
     def all_cats_found(self):
         return self.size == self.num_cats_found         # checking whether all done or not
@@ -68,21 +69,12 @@ class MeowdokuGame:
             try:
                 inpu = int(inp)
             except ValueError:
-                self.escape()
+                continue
             else:
-                if  inpu < 1 or inpu > self.size:     # checking whether location is in board
+                if  inpu < 0 or inpu > self.size-1:     # checking whether location is in board
                     continue
                 else:
-                    return inpu -1
-
-               
-
-    def escape(self):
-        print("Game exited.")
-        print(f"Number of guesses: {self.guesses}")
-        print(f"Correctness Rate: {self.num_cats_found / self.guesses * 100:.2f}%")
-        exit()
-        
+                    return inpu
         
     def play(self):
         
@@ -102,13 +94,4 @@ class MeowdokuGame:
                 
         print("Congratulations!")                               # after all iterations and correct guesses, end game 
         print(f"Number of guesses: {self.guesses}")
-        print(f"Correctness Rate: {self.num_cats_found / self.guesses * 100:.2f}%")
 
-inp = input("Enter board size between 3 and 24 (default is 4): ")
-coloursall = ['A', 'B', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z']
-colours = coloursall[:int(inp)] if inp.isdigit() and 3 <= int(inp) <= 24 else coloursall[:4]
-random.shuffle(colours)
-answers = [x for x in range(len(colours))]
-random.shuffle(answers)
-game = MeowdokuGame(int(inp), colours, answers)
-game.play() 
